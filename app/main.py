@@ -15,12 +15,25 @@ database = client["rnaseq_analysis"]
 
 @app.post("/upload")
 async def upload_files(files: List[UploadFile] = File(...)):
-	#save the uploaded files and store metadata in MongoDB
+	
+	fastq_files = []
 	for file in files:
-	   contents = await file.read()
-	   with openff"data/{file.filename}", "wb") as f:
+		if not file.filename.endswith(".fastq"):
+		  return {"Error": f"{file.filename} is not a fastq file."}
+	
+	#save the uploaded files and store metadata in MongoDB
+	  
+	   	contents = await file.read()
+		fastq_files.append({
+			"filename": file.filename,
+			"content": file.content_type
+			"size": len(content),
+		)}
+
+	   with open(f"upload/{file.filename}", "wb") as f:
+
 		f.write(contents)
-	   db.files.insert_one({filename": file.filename})
+	   
 	return {"message": "File uploaded successfully"}
 
 @app.post("/analyze")
